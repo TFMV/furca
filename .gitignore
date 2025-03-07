@@ -25,3 +25,9 @@ go.work.sum
 .env
 
 .DS_Store
+
+# Release files
+release.sh
+
+# Release artifacts
+release/
