@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/TFMV/furca/logger"
 	"github.com/google/go-github/v60/github"
 	"golang.org/x/oauth2"
 )
@@ -48,6 +49,7 @@ func NewClient(token string) (*Client, error) {
 
 // GetForkedRepositories returns a list of repositories that are forks
 func (c *Client) GetForkedRepositories(ctx context.Context) ([]Repository, error) {
+	log := logger.GetLogger()
 	// First, get all repositories for the authenticated user
 	opts := &github.RepositoryListByAuthenticatedUserOptions{
 		ListOptions: github.ListOptions{PerPage: 100},
@@ -70,7 +72,7 @@ func (c *Client) GetForkedRepositories(ctx context.Context) ([]Repository, error
 		opts.Page = resp.NextPage
 	}
 
-	fmt.Printf("Found %d total repositories\n", len(allRepos))
+	log.Infof("Found %d total repositories", len(allRepos))
 
 	// Now identify which ones are forks
 	var forks []Repository
@@ -79,12 +81,12 @@ func (c *Client) GetForkedRepositories(ctx context.Context) ([]Repository, error
 		// Check if this is a fork
 		if repo.GetFork() {
 			forkCount++
-			fmt.Printf("Processing fork #%d: %s\n", forkCount, repo.GetFullName())
+			log.Debugf("Processing fork #%d: %s", forkCount, repo.GetFullName())
 
 			// For each fork, we need to get the full repository details to access parent info
 			fullRepo, _, err := c.client.Repositories.Get(ctx, repo.GetOwner().GetLogin(), repo.GetName())
 			if err != nil {
-				fmt.Printf("Error getting details for %s: %v\n", repo.GetFullName(), err)
+				log.Warnf("Error getting details for %s: %v", repo.GetFullName(), err)
 				continue
 			}
 
@@ -98,14 +100,14 @@ func (c *Client) GetForkedRepositories(ctx context.Context) ([]Repository, error
 					ParentOwner: parent.GetOwner().GetLogin(),
 					ParentName:  parent.GetName(),
 				})
-				fmt.Printf("Added fork: %s (parent: %s)\n", fullRepo.GetFullName(), parent.GetFullName())
+				log.Debugf("Added fork: %s (parent: %s)", fullRepo.GetFullName(), parent.GetFullName())
 			} else {
-				fmt.Printf("Warning: Fork %s has no parent information\n", fullRepo.GetFullName())
+				log.Warnf("Warning: Fork %s has no parent information", fullRepo.GetFullName())
 			}
 		}
 	}
 
-	fmt.Printf("Identified %d forks with parent information\n", len(forks))
+	log.Infof("Identified %d forks with parent information", len(forks))
 	return forks, nil
 }
 
@@ -142,6 +144,8 @@ func (c *Client) IsRepositoryBehindUpstream(ctx context.Context, repo Repository
 
 // SyncRepositoryWithUpstream syncs a forked repository with its upstream
 func (c *Client) SyncRepositoryWithUpstream(ctx context.Context, repo Repository) error {
+	log := logger.GetLogger()
+
 	// Get current commit SHA before sync for audit logging
 	repoInfo, _, err := c.client.Repositories.Get(ctx, repo.Owner, repo.Name)
 	if err != nil {
@@ -163,13 +167,13 @@ func (c *Client) SyncRepositoryWithUpstream(ctx context.Context, repo Repository
 	repoInfo, _, err = c.client.Repositories.Get(ctx, repo.Owner, repo.Name)
 	if err != nil {
 		// Log but don't fail if we can't get the updated SHA
-		fmt.Printf("Warning: Failed to get updated repository info for %s: %v\n", repo.FullName, err)
+		log.Warnf("Failed to get updated repository info for %s: %v", repo.FullName, err)
 		return nil
 	}
 	afterSHA := repoInfo.GetDefaultBranch()
 
 	// Log the sync operation with commit SHAs
-	fmt.Printf("%s | INFO | Synced %s | from commit SHA %s → %s\n",
+	log.Infof("%s | Synced %s | from commit SHA %s → %s",
 		time.Now().Format(time.RFC3339),
 		repo.FullName,
 		beforeSHA,
