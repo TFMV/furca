@@ -2,6 +2,32 @@
 
 Keep your GitHub forks effortlessly fresh.
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/TFMV/furca)](https://goreportcard.com/report/github.com/TFMV/furca)
+[![Go 1.24](https://img.shields.io/badge/Go-1.24-blue.svg)](https://golang.org/doc/go1.24)
+[![License](https://img.shields.io/github/license/TFMV/furca)](LICENSE)
+
+## Table of Contents
+
+- [Furca](#furca)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Features](#features)
+  - [Installation](#installation)
+    - [From Source](#from-source)
+    - [Using Go Install](#using-go-install)
+  - [Configuration](#configuration)
+    - [Additional Configuration Options](#additional-configuration-options)
+  - [Usage](#usage)
+    - [Sync Command](#sync-command)
+    - [Advanced Options](#advanced-options)
+      - [Dry Run Mode](#dry-run-mode)
+      - [JSON Output](#json-output)
+      - [Retry Configuration](#retry-configuration)
+      - [Log Level](#log-level)
+  - [Example Output](#example-output)
+  - [Requirements](#requirements)
+  - [License](#license)
+
 ## Overview
 
 Furca is a command-line tool built in Go designed to automate the synchronization of forked GitHub repositories with their upstream sources. It simplifies the developer experience by automatically fetching repository information, determining if forks are behind their upstream repositories, and synchronizing them accordingly when executed.
