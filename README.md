@@ -48,11 +48,37 @@ Furca requires a GitHub personal access token with the `repo` scope to access yo
 
 2. `.env` file in the current directory:
 
-   ```
+   ```bash
    GITHUB_TOKEN=your_github_token_here
    ```
 
 You can also create a `.furca` file in your home directory with the same format.
+
+### Additional Configuration Options
+
+You can configure the following options either via command-line flags or in your `.env` file:
+
+| Environment Variable | Command-line Flag | Description | Default |
+|----------------------|-------------------|-------------|---------|
+| `GITHUB_TOKEN` | - | GitHub personal access token | (required) |
+| `LOG_LEVEL` | - | Logging verbosity (debug, info, warn, error) | info |
+| `DRY_RUN` | `--dry-run` | Preview changes without syncing | false |
+| `JSON_OUTPUT` | `--json` | Output results in JSON format | false |
+| `MAX_RETRIES` | `--max-retries` | Maximum retry attempts for API operations | 2 |
+| `RETRY_DELAY` | `--retry-delay` | Delay in seconds between retries | 3 |
+
+Example `.env` file:
+
+```bash
+GITHUB_TOKEN=your_github_token_here
+LOG_LEVEL=debug
+DRY_RUN=true
+JSON_OUTPUT=true
+MAX_RETRIES=3
+RETRY_DELAY=5
+```
+
+Command-line flags take precedence over environment variables.
 
 ## Usage
 
@@ -71,43 +97,78 @@ This will:
 3. Synchronize the ones that are behind
 4. Display the results
 
+### Advanced Options
+
+#### Dry Run Mode
+
+Preview which repositories would be synced without making any changes:
+
+```bash
+furca sync --dry-run
+```
+
+Example output:
+
+```bash
+[DRY-RUN] ✅ awesome-project is up to date with upstream
+[DRY-RUN] 🔄 Would sync cool-library (behind by 5 commits)
+```
+
+#### JSON Output
+
+Get structured JSON output for integration with other tools:
+
+```bash
+furca sync --json
+```
+
+Example output:
+
+```json
+{
+  "synced": ["weaviate", "duckdb-wasm"],
+  "up_to_date": ["pattern", "simdjson-go"],
+  "errors": {
+    "codon": "failed to compare commits: 404 Not Found"
+  },
+  "timestamp": "2025-03-07T16:30:00Z"
+}
+```
+
+#### Retry Configuration
+
+Configure retry behavior for API operations:
+
+```bash
+furca sync --max-retries=3 --retry-delay=5
+```
+
+#### Log Level
+
+Control the verbosity of logging:
+
+```bash
+# In .env file or environment variable
+LOG_LEVEL=debug  # Options: debug, info, warn, error, dpanic, panic, fatal
+```
+
 ## Example Output
 
-```
-✅ translation-agent is up to date with upstream
-❌ Error checking codon: failed to compare commits: GET https://api.github.com/repos/TFMV/codon/compare/exaloop%3Amaster...master: 404 Not Found []
-✅ smallpond is up to date with upstream
-✅ pgroll is up to date with upstream
-✅ myduckserver is up to date with upstream
-✅ stringtheory is up to date with upstream
-✅ llvm-project is up to date with upstream
-✅ go-capnp is up to date with upstream
-❌ Error checking professional-services-data-validator: failed to compare commits: GET https://api.github.com/repos/TFMV/professional-services-data-validator/compare/GoogleCloudPlatform%3Amaster...master: 404 Not Found []
-✅ gcp_data_utilities is up to date with upstream
-✅ sheepda is up to date with upstream
-✅ rclone is up to date with upstream
-✅ automate-dv is up to date with upstream
-✅ sklearn is up to date with upstream
-✅ python-cluster is up to date with upstream
-✅ sqlserver2pgsql is up to date with upstream
-✅ pattern is up to date with upstream
-✅ bodkin is up to date with upstream
-✅ spanner-migration-tool is up to date with upstream
-✅ gocql is up to date with upstream
-✅ act is up to date with upstream
-✅ gazette-core is up to date with upstream
-✅ resume-cli is up to date with upstream
-✅ trillian is up to date with upstream
-✅ urho-samples is up to date with upstream
-✅ SpatialSearch is up to date with upstream
-✅ petl is up to date with upstream
-✅ resume-schema is up to date with upstream
-✅ genAI is up to date with upstream
-✅ ora2pg is up to date with upstream
-✅ simdjson-go is up to date with upstream
-✅ slim is up to date with upstream
-🔄 Successfully synced weaviate with upstream
-❌ Failed to sync pdf2json: failed to sync repository: failed to execute request: POST https://api.github.com/repos/TFMV/pdf2json/merge-upstream: 409 There are merge conflicts []
+```bash
+Fetching forked repositories...
+Found 5 forked repositories
+✅ awesome-project is up to date with upstream
+🔄 Successfully synced cool-library with upstream (was behind by 2 commits)
+❌ Error checking useful-tool: failed to compare commits: 404 Not Found
+✅ example-repo is up to date with upstream
+🔄 Successfully synced test-project with upstream (was behind by 5 commits)
+
+📊 Summary:
+🔄 Synced repositories: 2
+✅ Up-to-date repositories: 2
+❌ Errors encountered: 1
+
+See logs for details.
 ```
 
 ## Requirements
