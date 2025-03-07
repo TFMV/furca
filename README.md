@@ -74,18 +74,40 @@ This will:
 ## Example Output
 
 ```
-Fetching forked repositories...
-Found 5 forked repositories
-Checking repository: awesome-project
-Checking repository: cool-library
-Checking repository: useful-tool
-Checking repository: example-repo
-Checking repository: test-project
-✅ awesome-project is up to date with upstream
-🔄 Successfully synced cool-library with upstream
-❌ Error checking useful-tool: failed to compare commits: 404 Not Found
-✅ example-repo is up to date with upstream
-🔄 Successfully synced test-project with upstream
+✅ translation-agent is up to date with upstream
+❌ Error checking codon: failed to compare commits: GET https://api.github.com/repos/TFMV/codon/compare/exaloop%3Amaster...master: 404 Not Found []
+✅ smallpond is up to date with upstream
+✅ pgroll is up to date with upstream
+✅ myduckserver is up to date with upstream
+✅ stringtheory is up to date with upstream
+✅ llvm-project is up to date with upstream
+✅ go-capnp is up to date with upstream
+❌ Error checking professional-services-data-validator: failed to compare commits: GET https://api.github.com/repos/TFMV/professional-services-data-validator/compare/GoogleCloudPlatform%3Amaster...master: 404 Not Found []
+✅ gcp_data_utilities is up to date with upstream
+✅ sheepda is up to date with upstream
+✅ rclone is up to date with upstream
+✅ automate-dv is up to date with upstream
+✅ sklearn is up to date with upstream
+✅ python-cluster is up to date with upstream
+✅ sqlserver2pgsql is up to date with upstream
+✅ pattern is up to date with upstream
+✅ bodkin is up to date with upstream
+✅ spanner-migration-tool is up to date with upstream
+✅ gocql is up to date with upstream
+✅ act is up to date with upstream
+✅ gazette-core is up to date with upstream
+✅ resume-cli is up to date with upstream
+✅ trillian is up to date with upstream
+✅ urho-samples is up to date with upstream
+✅ SpatialSearch is up to date with upstream
+✅ petl is up to date with upstream
+✅ resume-schema is up to date with upstream
+✅ genAI is up to date with upstream
+✅ ora2pg is up to date with upstream
+✅ simdjson-go is up to date with upstream
+✅ slim is up to date with upstream
+🔄 Successfully synced weaviate with upstream
+❌ Failed to sync pdf2json: failed to sync repository: failed to execute request: POST https://api.github.com/repos/TFMV/pdf2json/merge-upstream: 409 There are merge conflicts []
 ```
 
 ## Requirements
