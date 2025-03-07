@@ -2,6 +2,7 @@
 
 Keep your GitHub forks effortlessly fresh.
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/TFMV/furca.svg)](https://pkg.go.dev/github.com/TFMV/furca)
 [![Go Report Card](https://goreportcard.com/badge/github.com/TFMV/furca)](https://goreportcard.com/report/github.com/TFMV/furca)
 [![Go 1.24](https://img.shields.io/badge/Go-1.24-blue.svg)](https://golang.org/doc/go1.24)
 [![License](https://img.shields.io/github/license/TFMV/furca)](LICENSE)
