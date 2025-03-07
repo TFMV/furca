@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/google/go-github/v60/github"
 	"golang.org/x/oauth2"
@@ -109,7 +110,7 @@ func (c *Client) GetForkedRepositories(ctx context.Context) ([]Repository, error
 }
 
 // IsRepositoryBehindUpstream checks if a forked repository is behind its upstream
-func (c *Client) IsRepositoryBehindUpstream(ctx context.Context, repo Repository) (bool, error) {
+func (c *Client) IsRepositoryBehindUpstream(ctx context.Context, repo Repository) (bool, int, error) {
 	comparison, _, err := c.client.Repositories.CompareCommits(
 		ctx,
 		repo.Owner,
@@ -129,19 +130,27 @@ func (c *Client) IsRepositoryBehindUpstream(ctx context.Context, repo Repository
 			&github.ListOptions{},
 		)
 		if err != nil {
-			return false, fmt.Errorf("failed to compare commits: %w", err)
+			return false, 0, fmt.Errorf("failed to compare commits: %w", err)
 		}
 	}
 
 	// If AheadBy > 0, the fork has commits that the upstream doesn't
 	// If BehindBy > 0, the fork is behind the upstream
-	return comparison.GetBehindBy() > 0, nil
+	behindBy := comparison.GetBehindBy()
+	return behindBy > 0, behindBy, nil
 }
 
 // SyncRepositoryWithUpstream syncs a forked repository with its upstream
 func (c *Client) SyncRepositoryWithUpstream(ctx context.Context, repo Repository) error {
+	// Get current commit SHA before sync for audit logging
+	repoInfo, _, err := c.client.Repositories.Get(ctx, repo.Owner, repo.Name)
+	if err != nil {
+		return fmt.Errorf("failed to get repository info: %w", err)
+	}
+	beforeSHA := repoInfo.GetDefaultBranch()
+
 	// Try with main branch first
-	err := c.syncBranch(ctx, repo, "main")
+	err = c.syncBranch(ctx, repo, "main")
 	if err != nil {
 		// Try with master branch if main fails
 		err = c.syncBranch(ctx, repo, "master")
@@ -149,6 +158,23 @@ func (c *Client) SyncRepositoryWithUpstream(ctx context.Context, repo Repository
 			return fmt.Errorf("failed to sync repository: %w", err)
 		}
 	}
+
+	// Get updated commit SHA after sync for audit logging
+	repoInfo, _, err = c.client.Repositories.Get(ctx, repo.Owner, repo.Name)
+	if err != nil {
+		// Log but don't fail if we can't get the updated SHA
+		fmt.Printf("Warning: Failed to get updated repository info for %s: %v\n", repo.FullName, err)
+		return nil
+	}
+	afterSHA := repoInfo.GetDefaultBranch()
+
+	// Log the sync operation with commit SHAs
+	fmt.Printf("%s | INFO | Synced %s | from commit SHA %s → %s\n",
+		time.Now().Format(time.RFC3339),
+		repo.FullName,
+		beforeSHA,
+		afterSHA)
+
 	return nil
 }
 
