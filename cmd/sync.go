@@ -15,7 +15,9 @@ import (
 	"github.com/spf13/viper"
 )
 
-// SyncResult represents the result of a sync operation
+// SyncResult represents the result of a sync operation for a single repository.
+// It contains information about the repository name, sync status, any errors encountered,
+// and how many commits the repository is behind its upstream.
 type SyncResult struct {
 	Name   string `json:"name"`
 	Status string `json:"status"`
@@ -23,7 +25,9 @@ type SyncResult struct {
 	Behind int    `json:"behind_by,omitempty"`
 }
 
-// SyncSummary represents the summary of all sync operations
+// SyncSummary represents the summary of all sync operations performed.
+// It contains lists of repositories that were synced, up-to-date, and encountered errors,
+// as well as a timestamp of when the sync operation was performed.
 type SyncSummary struct {
 	Synced    []string          `json:"synced"`
 	UpToDate  []string          `json:"up_to_date"`
@@ -42,6 +46,8 @@ var (
 	dryRunIcon  = color.YellowString("[DRY-RUN]")
 )
 
+// syncCmd represents the sync command which synchronizes forked repositories
+// with their upstream sources.
 var syncCmd = &cobra.Command{
 	Use:   "sync",
 	Short: "Synchronize your forked repositories with their upstream sources",
@@ -231,7 +237,9 @@ via the GITHUB_TOKEN environment variable or in a .env file.`,
 	},
 }
 
-// checkRepositoryWithRetries checks if a repository is behind its upstream with retries
+// checkRepositoryWithRetries checks if a repository is behind its upstream with retries.
+// It attempts to check the repository's status up to maxRetries times, with a delay of
+// retryDelay seconds between attempts.
 func checkRepositoryWithRetries(ctx context.Context, client *github.Client, repo github.Repository, maxRetries, retryDelay int) (bool, int, error) {
 	var err error
 	var behind bool
@@ -256,7 +264,9 @@ func checkRepositoryWithRetries(ctx context.Context, client *github.Client, repo
 	return false, 0, err
 }
 
-// syncRepositoryWithRetries syncs a repository with its upstream with retries
+// syncRepositoryWithRetries syncs a repository with its upstream with retries.
+// It attempts to sync the repository up to maxRetries times, with a delay of
+// retryDelay seconds between attempts.
 func syncRepositoryWithRetries(ctx context.Context, client *github.Client, repo github.Repository, maxRetries, retryDelay int) error {
 	var err error
 

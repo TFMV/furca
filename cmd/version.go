@@ -13,14 +13,17 @@ var (
 	date    string
 )
 
-// SetVersionInfo sets the version information
+// SetVersionInfo sets the version information for Furca.
+// It takes the version string, commit hash, and build date as parameters,
+// which are typically set during the build process via ldflags.
 func SetVersionInfo(v, c, d string) {
 	version = v
 	commit = c
 	date = d
 }
 
-// versionCmd represents the version command
+// versionCmd represents the version command which displays the current version
+// information for Furca, including the version number, commit hash, and build date.
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print the version information",
