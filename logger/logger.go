@@ -1,3 +1,7 @@
+// Package logger provides structured logging functionality for Furca.
+//
+// It implements a singleton logger using the zap logging library, with support for
+// different log levels, structured output, and colorized console logging.
 package logger
 
 import (
@@ -15,7 +19,10 @@ var (
 	once   sync.Once
 )
 
-// GetLogger returns a singleton instance of the logger
+// GetLogger returns a singleton instance of the logger.
+// It initializes the logger on the first call and returns the same instance
+// on subsequent calls, ensuring that there's only one logger throughout the application.
+// The logger is configured with appropriate encoding, log level, and output settings.
 func GetLogger() *zap.SugaredLogger {
 	once.Do(func() {
 		// Create a custom encoder config
@@ -45,7 +52,9 @@ func GetLogger() *zap.SugaredLogger {
 	return logger
 }
 
-// getLogLevel returns the appropriate log level based on the LOG_LEVEL environment variable
+// getLogLevel returns the appropriate log level based on the LOG_LEVEL environment variable.
+// It defaults to info level if no log level is specified or if the specified level is invalid.
+// Valid log levels are: debug, info, warn, error, dpanic, panic, fatal.
 func getLogLevel() zapcore.Level {
 	// Default to info level
 	level := zapcore.InfoLevel

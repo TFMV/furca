@@ -1,3 +1,7 @@
+// Package cmd implements the command-line interface for Furca.
+//
+// It provides commands for synchronizing GitHub forks with their upstream repositories,
+// as well as utility functions for configuration management and command execution.
 package cmd
 
 import (

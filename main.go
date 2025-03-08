@@ -1,3 +1,8 @@
+// Package main provides the entry point for Furca, a tool to keep GitHub forks effortlessly fresh.
+//
+// Furca automates the synchronization of forked GitHub repositories with their upstream sources.
+// It simplifies the developer experience by automatically fetching repository information,
+// determining if forks are behind their upstream repositories, and synchronizing them accordingly.
 package main
 
 import (
