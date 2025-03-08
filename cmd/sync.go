@@ -73,9 +73,12 @@ via the GITHUB_TOKEN environment variable or in a .env file.`,
 			log.Fatalf("Failed to create GitHub client: %v", err)
 		}
 
+		// Create a context for all operations
+		ctx := context.Background()
+
 		// Get forked repositories
 		log.Info("Fetching forked repositories...")
-		forks, err := client.GetForkedRepositories(context.Background())
+		forks, err := client.GetForkedRepositories(ctx)
 		if err != nil {
 			log.Fatalf("Failed to fetch forked repositories: %v", err)
 		}
@@ -107,7 +110,7 @@ via the GITHUB_TOKEN environment variable or in a .env file.`,
 				log.Debugf("Checking repository: %s", fork.Name)
 
 				// Check if fork is behind upstream with retries
-				behind, behindBy, err := checkRepositoryWithRetries(client, fork, maxRetries, retryDelay)
+				behind, behindBy, err := checkRepositoryWithRetries(ctx, client, fork, maxRetries, retryDelay)
 				if err != nil {
 					errMsg := fmt.Sprintf("failed to compare commits: %v", err)
 					results <- SyncResult{
@@ -147,7 +150,7 @@ via the GITHUB_TOKEN environment variable or in a .env file.`,
 
 				// Sync fork with upstream with retries
 				log.Debugf("Syncing %s with upstream...", fork.Name)
-				err = syncRepositoryWithRetries(client, fork, maxRetries, retryDelay)
+				err = syncRepositoryWithRetries(ctx, client, fork, maxRetries, retryDelay)
 				if err != nil {
 					errMsg := fmt.Sprintf("failed to sync repository: %v", err)
 					results <- SyncResult{
@@ -229,7 +232,7 @@ via the GITHUB_TOKEN environment variable or in a .env file.`,
 }
 
 // checkRepositoryWithRetries checks if a repository is behind its upstream with retries
-func checkRepositoryWithRetries(client *github.Client, repo github.Repository, maxRetries, retryDelay int) (bool, int, error) {
+func checkRepositoryWithRetries(ctx context.Context, client *github.Client, repo github.Repository, maxRetries, retryDelay int) (bool, int, error) {
 	var err error
 	var behind bool
 	var behindBy int
@@ -239,7 +242,7 @@ func checkRepositoryWithRetries(client *github.Client, repo github.Repository, m
 			time.Sleep(time.Duration(retryDelay) * time.Second)
 		}
 
-		behind, behindBy, err = client.IsRepositoryBehindUpstream(context.Background(), repo)
+		behind, behindBy, err = client.IsRepositoryBehindUpstream(ctx, repo)
 		if err == nil {
 			return behind, behindBy, nil
 		}
@@ -254,7 +257,7 @@ func checkRepositoryWithRetries(client *github.Client, repo github.Repository, m
 }
 
 // syncRepositoryWithRetries syncs a repository with its upstream with retries
-func syncRepositoryWithRetries(client *github.Client, repo github.Repository, maxRetries, retryDelay int) error {
+func syncRepositoryWithRetries(ctx context.Context, client *github.Client, repo github.Repository, maxRetries, retryDelay int) error {
 	var err error
 
 	for attempt := 0; attempt <= maxRetries; attempt++ {
@@ -262,7 +265,7 @@ func syncRepositoryWithRetries(client *github.Client, repo github.Repository, ma
 			time.Sleep(time.Duration(retryDelay) * time.Second)
 		}
 
-		err = client.SyncRepositoryWithUpstream(context.Background(), repo)
+		err = client.SyncRepositoryWithUpstream(ctx, repo)
 		if err == nil {
 			return nil
 		}
