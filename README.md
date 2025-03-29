@@ -2,6 +2,21 @@
 
 Keep your GitHub forks effortlessly fresh.
 
+## Why I Built This
+
+Forks are supposed to be flexible—but in practice, they’re often forgotten. I’ve seen too many teams rely on outdated forks, only to discover too late that upstream changes broke their build, introduced subtle bugs, or made debugging nearly impossible.
+
+GitHub provides the tools to sync forks manually, but there's no standard, repeatable way to:
+
+- Check which forks are behind
+- Sync them safely and consistently
+- Integrate those checks into CI/CD pipelines
+- Understand the sync state in structured, automatable ways
+
+So I built **Furca**.
+
+It’s a developer-first tool that brings visibility, automation, and control to a problem that usually gets handled with ad hoc scripts—or ignored entirely. Whether you’re working solo or maintaining dozens of forks across teams, Furca helps keep things clean, current, and CI-friendly.
+
 [![Build Status](https://github.com/TFMV/furca/actions/workflows/build.yml/badge.svg)](https://github.com/TFMV/furca/actions/workflows/build.yml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/TFMV/furca.svg)](https://pkg.go.dev/github.com/TFMV/furca)
 [![Go Report Card](https://goreportcard.com/badge/github.com/TFMV/furca)](https://goreportcard.com/report/github.com/TFMV/furca)
@@ -11,6 +26,7 @@ Keep your GitHub forks effortlessly fresh.
 ## Table of Contents
 
 - [Furca](#furca)
+  - [Why I Built This](#why-i-built-this)
   - [Table of Contents](#table-of-contents)
   - [Overview](#overview)
   - [Features](#features)
