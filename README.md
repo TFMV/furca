@@ -8,22 +8,6 @@ Keep your GitHub forks effortlessly fresh.
 [![Go 1.24](https://img.shields.io/badge/Go-1.24-blue.svg)](https://golang.org/doc/go1.24)
 [![License](https://img.shields.io/github/license/TFMV/furca)](LICENSE)
 
-TODO:
-
-```bash
-furca ci-check --json --fail-on-outdated
-```
-
-Where it exits non-zero if any forks are behind. That makes it plug-and-play with:
-
-GitHub Actions
-
-CircleCI
-
-GitLab CI/CD
-
-Argo or Tekton workflows
-
 ## Table of Contents
 
 - [Furca](#furca)
@@ -37,6 +21,7 @@ Argo or Tekton workflows
     - [Additional Configuration Options](#additional-configuration-options)
   - [Usage](#usage)
     - [Sync Command](#sync-command)
+    - [CI Check Command](#ci-check-command)
     - [Advanced Options](#advanced-options)
       - [Dry Run Mode](#dry-run-mode)
       - [JSON Output](#json-output)
@@ -110,6 +95,7 @@ You can configure the following options either via command-line flags or in your
 | `JSON_OUTPUT` | `--json` | Output results in JSON format | false |
 | `MAX_RETRIES` | `--max-retries` | Maximum retry attempts for API operations | 2 |
 | `RETRY_DELAY` | `--retry-delay` | Delay in seconds between retries | 3 |
+| `CI_FAIL_ON_OUTDATED` | `--fail-on-outdated` | Exit with error if repos are behind (for CI/CD) | false |
 
 Example `.env` file:
 
@@ -120,6 +106,7 @@ DRY_RUN=true
 JSON_OUTPUT=true
 MAX_RETRIES=3
 RETRY_DELAY=5
+CI_FAIL_ON_OUTDATED=true
 ```
 
 Command-line flags take precedence over environment variables.
@@ -140,6 +127,63 @@ This will:
 2. Check which ones are behind their upstream
 3. Synchronize the ones that are behind
 4. Display the results
+
+### CI Check Command
+
+The `ci-check` command is designed for integration with CI/CD pipelines. It checks if any of your forked repositories are behind their upstream sources without performing any synchronization:
+
+```bash
+furca ci-check
+```
+
+With the `--fail-on-outdated` flag, it will exit with a non-zero status code if any repositories are behind, making it ideal for CI/CD pipelines:
+
+```bash
+furca ci-check --fail-on-outdated
+```
+
+You can also get JSON output for better integration with CI/CD tools:
+
+```bash
+furca ci-check --json --fail-on-outdated
+```
+
+Example CI/CD integrations:
+
+**GitHub Actions:**
+
+```yaml
+steps:
+  - name: Check if forks are up to date
+    run: furca ci-check --fail-on-outdated
+```
+
+**CircleCI:**
+
+```yaml
+steps:
+  - checkout
+  - run:
+      name: Check if forks are up to date
+      command: furca ci-check --fail-on-outdated
+```
+
+**GitLab CI/CD:**
+
+```yaml
+check_forks:
+  script:
+    - furca ci-check --fail-on-outdated
+```
+
+**Argo or Tekton workflows:**
+
+```yaml
+- name: check-forks
+  container:
+    image: your-image-with-furca
+    command: [furca, ci-check, --fail-on-outdated]
+```
 
 ### Advanced Options
 
