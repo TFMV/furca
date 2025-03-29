@@ -8,6 +8,22 @@ Keep your GitHub forks effortlessly fresh.
 [![Go 1.24](https://img.shields.io/badge/Go-1.24-blue.svg)](https://golang.org/doc/go1.24)
 [![License](https://img.shields.io/github/license/TFMV/furca)](LICENSE)
 
+TODO:
+
+```bash
+furca ci-check --json --fail-on-outdated
+```
+
+Where it exits non-zero if any forks are behind. That makes it plug-and-play with:
+
+GitHub Actions
+
+CircleCI
+
+GitLab CI/CD
+
+Argo or Tekton workflows
+
 ## Table of Contents
 
 - [Furca](#furca)
